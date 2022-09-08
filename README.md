@@ -18,7 +18,7 @@ At this moment work is steel in progress
 - [X] You can remove elements from the list
 - [X] You can transfer elements between lists
 - [ ] There is an animations on adding/moving/removing elements
-- [ ] There is Callback on adding/moving/removing
+- [X] There is Callback on adding/moving/removing
 - [ ] You can fully customize list widget
 - [X] You can fully customize Elements apperance
 - [ ] You can change Draggable with LongPressDraggable
