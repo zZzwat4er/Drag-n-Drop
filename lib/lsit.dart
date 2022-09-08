@@ -22,6 +22,7 @@ class DragList extends StatefulWidget {
   final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
   final String? restorationId;
   final Clip clipBehavior;
+  final Container? itemContainer;
 
   final Widget Function(Object data) onBuildItemFromData;
   final bool Function(Object? data)? onWillAccept;
@@ -34,6 +35,7 @@ class DragList extends StatefulWidget {
     this.onWillAccept,
     this.onItemAdded,
     this.onItemRemoved,
+    this.itemContainer,
     super.key,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
@@ -156,23 +158,7 @@ class _DragListState extends State<DragList> {
 
   Widget _addDragTarget(Widget child, dynamic data, int order) =>
       Builder(
-        key: Key(order.toString()),
         builder: (context) {
-        final dataContainer = Container(
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.2),
-                blurRadius: 5,
-              ),
-            ],
-          ),
-          child: child,
-        );
-
         final dragTarget = DragTarget(
           onWillAccept: (data) {
             bool cond = data is DraggableListItemData;
@@ -189,17 +175,17 @@ class _DragListState extends State<DragList> {
             }
           },
           builder: (context, candidateData, rejectedData) {
-            return dataContainer;
+            return child;
           },
         );
 
         final item = DraggableListItem(
-          feedback: dataContainer,
+          feedback: child,
           data: data,
           order: order,
           childWhenDragging: Opacity(
             opacity: 0,
-            child: dataContainer,
+            child: child,
           ),
           onDragCompleted: () {
             if (order + 1 < listData.length && listData[order + 1] == data) {

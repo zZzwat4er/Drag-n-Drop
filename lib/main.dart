@@ -65,7 +65,22 @@ class _MyHomePageState extends State<MyHomePage> {
                     onWillAccept: (data) => true,
                     onBuildItemFromData: (data) {
                       if (data is ToyData) {
-                        return Text(data.data.toString());
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 5,
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: Text(data.data.toString()),
+                          ),
+                        );
                       } else {
                         return const Text('Wrong DataType');
                       }
