@@ -25,11 +25,15 @@ class DragList extends StatefulWidget {
 
   final Widget Function(Object data) onBuildItemFromData;
   final bool Function(Object? data)? onWillAccept;
+  final void Function(int pos, dynamic data)? onItemAdded;
+  final void Function(int pos, dynamic data)? onItemRemoved;
 
   const DragList({
     this.data = const [],
     required this.onBuildItemFromData,
     this.onWillAccept,
+    this.onItemAdded,
+    this.onItemRemoved,
     super.key,
     this.addAutomaticKeepAlives = true,
     this.addRepaintBoundaries = true,
@@ -57,10 +61,16 @@ class DragList extends StatefulWidget {
 
 class _DragListState extends State<DragList> {
   List<dynamic> listData = [];
+  late final bool Function(Object?) onWillAccept;
+  late final void Function(int pos, dynamic data) onItemRemoved;
+  late final void Function(int pos, dynamic data) onItemAdded;
 
   @override
   void initState() {
-    listData = widget.data;
+    listData = List<dynamic>.from(widget.data);
+    onWillAccept = widget.onWillAccept ?? (data) => true;
+    onItemAdded = widget.onItemAdded ?? (pos, data) {};
+    onItemRemoved = widget.onItemRemoved ?? (pos, data) {};
     super.initState();
   }
 
@@ -80,9 +90,7 @@ class _DragListState extends State<DragList> {
         if (data.order == null ||
             listData.length <= data.order! ||
             listData[data.order!] != data.data) {
-          setState(() {
-            listData.add(data.data);
-          });
+          _addItem(data.data);
         }
       },
       builder: (context, candidateData, rejectedData) {
@@ -147,7 +155,9 @@ class _DragListState extends State<DragList> {
   }
 
   Widget _addDragTarget(Widget child, dynamic data, int order) =>
-      Builder(builder: (context) {
+      Builder(
+        key: Key(order.toString()),
+        builder: (context) {
         final dataContainer = Container(
           height: 100,
           decoration: BoxDecoration(
@@ -205,14 +215,23 @@ class _DragListState extends State<DragList> {
       });
 
   void _destroyDataOnPos(int pos) {
+    onItemRemoved(pos, listData[pos]);
     setState(() {
       listData.removeAt(pos);
     });
   }
 
   void _insertItemOnPos(int pos, dynamic data) {
+    onItemAdded(pos, data);
     setState(() {
       listData.insert(pos, data);
+    });
+  }
+
+  void _addItem(dynamic data) {
+    onItemAdded(listData.length, data);
+    setState(() {
+      listData.add(data);
     });
   }
 }

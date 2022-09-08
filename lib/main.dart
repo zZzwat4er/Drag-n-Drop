@@ -43,6 +43,9 @@ class _MyHomePageState extends State<MyHomePage> {
     var dataToAdd = Random().nextInt(500);
     final scrollController = ScrollController();
     final scrollController2 = ScrollController();
+
+    print(data.length);
+    print(data2.length);
     return Scaffold(
       body: Column(
         children: [
@@ -53,6 +56,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: DragList(
                     controller: scrollController,
                     data: data,
+                    onItemAdded: (pos, data) {
+                      print('add1');
+                    },
+                    onItemRemoved: (pos, data) {
+                      print('remove1');
+                    },
                     onWillAccept: (data) => true,
                     onBuildItemFromData: (data) {
                       if (data is ToyData) {
@@ -68,6 +77,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     controller: scrollController2,
                     data: data2,
                     onWillAccept: (data) => true,
+                    onItemAdded: (pos, data) {
+                      print('add2');
+                    },
+                    onItemRemoved: (pos, data) {
+                      print('remove2');
+                    },
                     onBuildItemFromData: (data) {
                       if (data is ToyData) {
                         return Text(data.data.toString());
