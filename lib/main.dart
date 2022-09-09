@@ -29,12 +29,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final List<ToyData> data = [
     for (int i = 0; i < 10; i++) ...{
-      ToyData(data: i, order: i),
+      ToyData(data: Random().nextInt(500), order: i),
     }
   ];
   final List<ToyData> data2 = [
     for (int i = 10; i < 15; i++) ...{
-      ToyData(data: i, order: i),
+      ToyData(data: Random().nextInt(500), order: i),
     }
   ];
 
@@ -93,10 +93,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     data: data2,
                     onWillAccept: (data) => true,
                     onItemAdded: (pos, data) {
-                      print('add2');
+                      setState(() {
+                        print('add: $pos');
+                        if (pos < data2.length) {
+                          data2.insert(pos, data);
+                        } else {
+                          data2.add(data);
+                        }
+                      });
                     },
                     onItemRemoved: (pos, data) {
-                      print('remove2');
+                      setState(() {
+                        print('remove: $pos');
+                        data2.removeAt(pos);
+                      });
                     },
                     onBuildItemFromData: (data) {
                       if (data is ToyData) {
@@ -120,7 +130,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Center(child: Icon(Icons.check)),
                   ),
                   data: ToyData(data: dataToAdd),
-                  onDragCompleted: () => setState(() {}),
+                  onDragCompleted: () => setState(() {
+                    print('WTF');
+                  }),
                   child: const SizedBox(
                     height: 100,
                     child: Center(child: Text('Drag Me')),

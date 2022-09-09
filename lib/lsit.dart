@@ -1,4 +1,5 @@
 import 'package:drag_n_drop_list/list_item.dart';
+import 'package:drag_n_drop_list/main.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -84,10 +85,10 @@ class _DragListState extends State<DragList> {
             (data.order == null ||
                 listData.length <= data.order! ||
                 listData[data.order!] != data.data);
-        final willAccept = widget.onWillAccept ?? (data) => true;
-        return cond && willAccept(data);
+        return cond && onWillAccept(data);
       },
       onAccept: (data) {
+        print('wtf');
         data as DraggableListItemData;
         if (data.order == null ||
             listData.length <= data.order! ||
@@ -157,13 +158,13 @@ class _DragListState extends State<DragList> {
   }
 
   Widget _addDragTarget(Widget child, dynamic data, int order) =>
-      Builder(
-        builder: (context) {
+      Builder(builder: (context) {
         final dragTarget = DragTarget(
-          onWillAccept: (data) {
-            bool cond = data is DraggableListItemData;
-            final willAccept = widget.onWillAccept ?? (data) => true;
-            return cond && willAccept(data);
+          onWillAccept: (inputData) {
+            bool cond = inputData is DraggableListItemData &&
+                data.hashCode !=
+                    (inputData as DraggableListItemData).data.hashCode;
+            return cond && onWillAccept(data);
           },
           onAccept: (data) {
             data as DraggableListItemData;
@@ -194,6 +195,9 @@ class _DragListState extends State<DragList> {
               _destroyDataOnPos(order);
             }
           },
+          onDragEnd: (details) {
+            print("Drag end, ${details.wasAccepted} ${details.offset}");
+          },
           child: dragTarget,
         );
 
@@ -203,21 +207,23 @@ class _DragListState extends State<DragList> {
   void _destroyDataOnPos(int pos) {
     onItemRemoved(pos, listData[pos]);
     setState(() {
-      listData.removeAt(pos);
+      // listData.removeAt(pos);
     });
   }
 
   void _insertItemOnPos(int pos, dynamic data) {
     onItemAdded(pos, data);
     setState(() {
-      listData.insert(pos, data);
+      listData = widget.data;
+      // listData.insert(pos, data);
     });
   }
 
   void _addItem(dynamic data) {
     onItemAdded(listData.length, data);
     setState(() {
-      listData.add(data);
+      listData = widget.data;
+      // listData.add(data);
     });
   }
 }
