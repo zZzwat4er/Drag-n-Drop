@@ -1,7 +1,7 @@
 import 'dart:math';
 
+import 'package:drag_n_drop_list/drag_n_drop_list.dart';
 import 'package:drag_n_drop_list/list_item.dart';
-import 'package:drag_n_drop_list/lsit.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -41,11 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var dataToAdd = Random().nextInt(500);
-    final scrollController = ScrollController();
-    final scrollController2 = ScrollController();
 
-    print(data.length);
-    print(data2.length);
     return Scaffold(
       body: Column(
         children: [
@@ -53,14 +49,11 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Row(
               children: [
                 Expanded(
-                  child: DragList(
-                    controller: scrollController,
+                  child: DropList(
                     data: data,
                     onItemAdded: (pos, data) {
-                      print('add1');
                     },
                     onItemRemoved: (pos, data) {
-                      print('remove1');
                     },
                     onWillAccept: (data) => true,
                     onBuildItemFromData: (data) {
@@ -88,13 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 Expanded(
-                  child: DragList(
-                    controller: scrollController2,
+                  child: DropList(
                     data: data2,
                     onWillAccept: (data) => true,
                     onItemAdded: (pos, data) {
                       setState(() {
-                        print('add: $pos');
                         if (pos < data2.length) {
                           data2.insert(pos, data);
                         } else {
@@ -104,7 +95,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     onItemRemoved: (pos, data) {
                       setState(() {
-                        print('remove: $pos');
                         data2.removeAt(pos);
                       });
                     },
@@ -130,9 +120,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Center(child: Icon(Icons.check)),
                   ),
                   data: ToyData(data: dataToAdd),
-                  onDragCompleted: () => setState(() {
-                    print('WTF');
-                  }),
                   child: const SizedBox(
                     height: 100,
                     child: Center(child: Text('Drag Me')),

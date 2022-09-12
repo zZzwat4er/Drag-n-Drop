@@ -1,9 +1,10 @@
+library drag_n_drop_list;
+
 import 'package:drag_n_drop_list/list_item.dart';
-import 'package:drag_n_drop_list/main.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-class DragList extends StatefulWidget {
+class DropList extends StatefulWidget {
   final Axis scrollDirection;
   final bool reverse;
   final ScrollController? controller;
@@ -30,7 +31,7 @@ class DragList extends StatefulWidget {
   final void Function(int pos, dynamic data)? onItemAdded;
   final void Function(int pos, dynamic data)? onItemRemoved;
 
-  const DragList({
+  const DropList({
     this.data = const [],
     required this.onBuildItemFromData,
     this.onWillAccept,
@@ -59,21 +60,21 @@ class DragList extends StatefulWidget {
   });
 
   @override
-  State<DragList> createState() => _DragListState();
+  State<DropList> createState() => _DropListState();
 }
 
-class _DragListState extends State<DragList> {
-  List<dynamic> listData = [];
-  late final bool Function(Object?) onWillAccept;
-  late final void Function(int pos, dynamic data) onItemRemoved;
-  late final void Function(int pos, dynamic data) onItemAdded;
+class _DropListState extends State<DropList> {
+  late final bool Function(Object?) _onWillAccept;
+  late final void Function(int pos, dynamic data) _onItemRemoved;
+  late final void Function(int pos, dynamic data) _onItemAdded;
+  late final ScrollController _scrollController;
 
   @override
   void initState() {
-    listData = List<dynamic>.from(widget.data);
-    onWillAccept = widget.onWillAccept ?? (data) => true;
-    onItemAdded = widget.onItemAdded ?? (pos, data) {};
-    onItemRemoved = widget.onItemRemoved ?? (pos, data) {};
+    _onWillAccept = widget.onWillAccept ?? (data) => true;
+    _onItemAdded = widget.onItemAdded ?? (pos, data) {};
+    _onItemRemoved = widget.onItemRemoved ?? (pos, data) {};
+    _scrollController = widget.controller ?? ScrollController();
     super.initState();
   }
 
@@ -83,25 +84,24 @@ class _DragListState extends State<DragList> {
       onWillAccept: (data) {
         bool cond = data is DraggableListItemData &&
             (data.order == null ||
-                listData.length <= data.order! ||
-                listData[data.order!] != data.data);
-        return cond && onWillAccept(data);
+                widget.data.length <= data.order! ||
+                widget.data[data.order!] != data.data);
+        return cond && _onWillAccept(data);
       },
       onAccept: (data) {
-        print('wtf');
         data as DraggableListItemData;
         if (data.order == null ||
-            listData.length <= data.order! ||
-            listData[data.order!] != data.data) {
+            widget.data.length <= data.order! ||
+            widget.data[data.order!] != data.data) {
           _addItem(data.data);
         }
       },
       builder: (context, candidateData, rejectedData) {
         final showContainerCond = candidateData.isNotEmpty &&
             ((candidateData.first as DraggableListItemData).order == null ||
-                listData.length <=
+                widget.data.length <=
                     (candidateData.first as DraggableListItemData).order! ||
-                listData[(candidateData.first as DraggableListItemData)
+                widget.data[(candidateData.first as DraggableListItemData)
                         .order!] !=
                     (candidateData.first as DraggableListItemData).data);
 
@@ -131,7 +131,7 @@ class _DragListState extends State<DragList> {
       addSemanticIndexes: widget.addSemanticIndexes,
       cacheExtent: widget.cacheExtent,
       clipBehavior: widget.clipBehavior,
-      controller: widget.controller,
+      controller: _scrollController,
       dragStartBehavior: widget.dragStartBehavior,
       itemExtent: widget.itemExtent,
       keyboardDismissBehavior: widget.keyboardDismissBehavior,
@@ -145,10 +145,10 @@ class _DragListState extends State<DragList> {
       semanticChildCount: widget.semanticChildCount,
       shrinkWrap: widget.shrinkWrap,
       children: [
-        for (int i = 0; i < listData.length; i++) ...{
+        for (int i = 0; i < widget.data.length; i++) ...{
           _addDragTarget(
-            widget.onBuildItemFromData(listData[i]),
-            listData[i],
+            widget.onBuildItemFromData(widget.data[i]),
+            widget.data[i],
             i,
           ),
         },
@@ -164,7 +164,7 @@ class _DragListState extends State<DragList> {
             bool cond = inputData is DraggableListItemData &&
                 data.hashCode !=
                     (inputData as DraggableListItemData).data.hashCode;
-            return cond && onWillAccept(data);
+            return cond && _onWillAccept(data);
           },
           onAccept: (data) {
             data as DraggableListItemData;
@@ -189,14 +189,11 @@ class _DragListState extends State<DragList> {
             child: child,
           ),
           onDragCompleted: () {
-            if (order + 1 < listData.length && listData[order + 1] == data) {
+            if (order + 1 < widget.data.length && widget.data[order + 1] == data) {
               _destroyDataOnPos(order + 1);
             } else {
               _destroyDataOnPos(order);
             }
-          },
-          onDragEnd: (details) {
-            print("Drag end, ${details.wasAccepted} ${details.offset}");
           },
           child: dragTarget,
         );
@@ -205,25 +202,14 @@ class _DragListState extends State<DragList> {
       });
 
   void _destroyDataOnPos(int pos) {
-    onItemRemoved(pos, listData[pos]);
-    setState(() {
-      // listData.removeAt(pos);
-    });
+    _onItemRemoved(pos, widget.data[pos]);
   }
 
   void _insertItemOnPos(int pos, dynamic data) {
-    onItemAdded(pos, data);
-    setState(() {
-      listData = widget.data;
-      // listData.insert(pos, data);
-    });
+    _onItemAdded(pos, data);
   }
 
   void _addItem(dynamic data) {
-    onItemAdded(listData.length, data);
-    setState(() {
-      listData = widget.data;
-      // listData.add(data);
-    });
+    _onItemAdded(widget.data.length, data);
   }
 }

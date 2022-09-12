@@ -1,33 +1,39 @@
-# Drag'n'drop
+<!--
+This README describes the package. If you publish this package to pub.dev,
+this README's contents appear on the landing page for your package.
 
-This is a test project for implementing Drag and Drop list functionality that meets a list of special requirements
+For information about how to write a good package README, see the guide for
+[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
 
-At this moment work is steel in progress
+For general information about developing packages, see the Dart guide for
+[creating packages](https://dart.dev/guides/libraries/create-library-packages)
+and the Flutter guide for
+[developing packages and plugins](https://flutter.dev/developing-packages).
+-->
 
-## Requirements
+TODO: Put a short description of the package here that helps potential users
+know whether this package might be useful for them.
 
-- You can swap list elements with Drag and Drop
-- You can add new element to the list
-- You can remove elements from the list
-- You can transfer elements between lists
+## Features
 
-## Features implemented
+TODO: List what your package can do. Maybe include images, gifs, or videos.
 
-- [X] You can swap list elements with Drag and Drop
-- [X] You can add new element to the list
-- [X] You can remove elements from the list
-- [X] You can transfer elements between lists
-- [ ] There is an animations on adding/moving/removing elements
-- [X] There is Callback on adding/moving/removing
-- [ ] You can fully customize list widget
-- [X] You can fully customize Elements apperance
-- [ ] You can change Draggable with LongPressDraggable
+## Getting started
 
-## Demo
+TODO: List prerequisites and provide or point to information on how to
+start using the package.
 
-You can play around with this widget by running the code on your local machine
+## Usage
 
-## Tested
+TODO: Include short and useful examples for package users. Add longer examples
+to `/example` folder.
 
-- Linux
-- Web
+```dart
+const like = 'sample';
+```
+
+## Additional information
+
+TODO: Tell users more about the package: where to find more information, how to
+contribute to the package, how to file issues, what response they can expect
+from the package authors, and more.
